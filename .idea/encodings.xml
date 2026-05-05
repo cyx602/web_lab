@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/library-app/app/bookDetail.tsx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/app/borrow.tsx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/app/index.tsx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/app/notification.tsx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/app/profile.tsx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/app/reservation.tsx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/app/search.tsx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/api/axios.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/api/config.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/screens/BookDetailScreen.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/screens/BorrowScreen.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/screens/HomeScreen.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/screens/LoginScreen.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/screens/NotificationScreen.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/screens/ProfileScreen.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/screens/ReservationScreen.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/screens/SearchScreen.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/library-app/src/store/authStore.js" charset="UTF-8" />
+  </component>
+</project>
