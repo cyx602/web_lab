@@ -1,9 +1,12 @@
 package com.nchu.library.security;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +20,14 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    // 生成 Token（学号放入 subject）
+    // 核心修改：将 String 密钥转换为安全密钥对象
+    private SecretKey getSigningKey() {
+        // 使用 UTF-8 编码获取字节数组，避免 Base64 自动解码
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    // 生成 Token
     public String generateToken(String studentId) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, studentId);
@@ -32,7 +42,9 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, secret)
+                // 修改：使用密钥对象签名，不再手动指定 SignatureAlgorithm.HS512，
+                // 因为 Keys.hmacShaKeyFor 会根据密钥长度自动匹配算法
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -53,7 +65,8 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secret)
+                // 修改：使用密钥对象进行解析[cite: 7]
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
