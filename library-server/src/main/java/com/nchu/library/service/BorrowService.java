@@ -19,15 +19,28 @@ public class BorrowService {
     private final BorrowRecordRepository borrowRecordRepository;
     private final ReservationRepository reservationRepository;
     private final NotificationRepository notificationRepository;
+    private static final int MAX_BORROW_COUNT = 5;
 
-    // 借阅图书：检查用户状态、库存、是否已有未还记录
     @Transactional
     public BorrowRecord borrowBook(Long userId, Long bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
+
         if (!"正常".equals(user.getCardStatus())) {
             throw new RuntimeException("借阅证状态异常，无法借阅");
         }
+
+        // --- 增强功能：检查借阅数量限制 ---
+        List<BorrowRecord> currentBorrowed = borrowRecordRepository.findByBookIdAndStatus(null, "借阅中");
+        // 注意：这里需要修改 Repository 或使用 Stream 过滤该用户的记录
+        long count = borrowRecordRepository.findByUserId(userId).stream()
+                .filter(r -> "借阅中".equals(r.getStatus()) || "逾期".equals(r.getStatus()))
+                .count();
+
+        if (count >= MAX_BORROW_COUNT) {
+            throw new RuntimeException("借阅失败：每人最多只能借阅 " + MAX_BORROW_COUNT + " 本图书");
+        }
+        // --------------------------------
 
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("图书不存在"));
@@ -51,11 +64,10 @@ public class BorrowService {
         record.setUser(user);
         record.setBook(book);
         record.setBorrowDate(LocalDateTime.now());
-        record.setDueDate(LocalDateTime.now().plusDays(30)); // 默认借阅30天
+        record.setDueDate(LocalDateTime.now().plusDays(30));
         record.setStatus("借阅中");
         return borrowRecordRepository.save(record);
     }
-
     // 续借：延长借阅期限（例如再延长30天）
     @Transactional
     public BorrowRecord renewBook(Long recordId, Long userId) {
@@ -113,7 +125,6 @@ public class BorrowService {
     public List<BorrowRecord> getUserHistory(Long userId) {
         return borrowRecordRepository.findByUserId(userId);
     }
-
     // 检测逾期并给逾期记录的用户发通知（实际可由定时任务调用）
     @Transactional
     public void checkOverdueAndNotify() {

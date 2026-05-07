@@ -41,4 +41,13 @@ public class NotificationController {
         notificationRepository.save(notification);
         return ResponseEntity.ok(notification);
     }
+
+    @PutMapping("/read-all")
+    public ResponseEntity<String> markAllAsRead(Authentication authentication) {
+        Long userId = extractUserId(authentication);
+        List<Notification> unread = notificationRepository.findByUserIdAndIsReadFalse(userId);
+        unread.forEach(n -> n.setIsRead(true));
+        notificationRepository.saveAll(unread);
+        return ResponseEntity.ok("所有通知已标记为已读");
+    }
 }

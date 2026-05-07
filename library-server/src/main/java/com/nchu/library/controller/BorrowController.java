@@ -1,6 +1,7 @@
 package com.nchu.library.controller;
 
 import com.nchu.library.entity.BorrowRecord;
+import com.nchu.library.repository.UserRepository; // 引入 Repository
 import com.nchu.library.service.BorrowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,22 +16,14 @@ import java.util.List;
 public class BorrowController {
 
     private final BorrowService borrowService;
+    private final UserRepository userRepository; // 注入 UserRepository
 
-    // 获取当前登录用户ID的辅助方法
-    private Long getCurrentUserId(Authentication authentication) {
-        // Authentication 中的 principal 即学号，我们需要根据学号查用户ID
-        // 这里简化：直接在 controller 中使用 UserRepository（为避免改动，我们使用 userService 或注入 repository）
-        // 为保持代码整洁，我们在 controller 注入 UserRepository（生产环境建议用 Service 封装）
-        return null; // 将在下面实际方法中实现
-    }
-
-    // 更好的做法：注入 UserRepository 并提取用户 ID
-    private final com.nchu.library.repository.UserRepository userRepository;
-
+    // 统一的提取用户 ID 方法
     private Long extractUserId(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("未登录");
         }
+        // Principal 存储的是学号
         String studentId = (String) authentication.getPrincipal();
         return userRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new RuntimeException("用户不存在"))
@@ -61,7 +54,7 @@ public class BorrowController {
         return ResponseEntity.ok(borrowService.returnBook(recordId, userId));
     }
 
-    // 借阅历史
+    // 获取当前登录用户的借阅历史
     @GetMapping("/history")
     public ResponseEntity<List<BorrowRecord>> getHistory(Authentication authentication) {
         Long userId = extractUserId(authentication);
