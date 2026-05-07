@@ -38,6 +38,19 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
+    // 在类中增加此方法
+    @Transactional
+    public void cleanupExpiredReservations() {
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+        List<Reservation> expired = reservationRepository.findByStatusAndNotifyDateBefore("到书通知", threeDaysAgo);
+
+        for (Reservation res : expired) {
+            res.setStatus("已取消");
+            // 这里可以增加逻辑：通知下一位预约者（如果需要）
+        }
+        reservationRepository.saveAll(expired);
+    }
+
     // 获取当前用户的预约列表
     public List<Reservation> getUserReservations(Long userId) {
         return reservationRepository.findByUserId(userId);
