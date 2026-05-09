@@ -29,4 +29,5 @@ public class GlobalExceptionHandler {
         body.put("error", "服务器内部错误");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
+
 }

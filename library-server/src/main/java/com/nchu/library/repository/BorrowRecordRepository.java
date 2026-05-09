@@ -7,4 +7,5 @@ import java.util.List;
 public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Long> {
     List<BorrowRecord> findByUserId(Long userId);
     List<BorrowRecord> findByBookIdAndStatus(Long bookId, String status);
+    List<BorrowRecord> findByUserIdOrderByBorrowDateDesc(Long userId);
 }
